@@ -1,5 +1,17 @@
 # Hatch Alarm Clock Debloat
 
+Why does it take 45 seconds to change the color and sound from my Hatch alarm clock? This must be fixed before it drives me more insane than I already am. 
+
+Anyways, I was frustrated with the fact that my mom bought me a $250 alarm clock that took like, five minutes to load so that I could change one light setting. I also reject the premise that a $250 alarm clock requires a paid subscription in order to be usable. 
+
+I had grand dreams for this app and debloat, including the ability to use my own iPhone music library to listen to music from the giant speaker that the Hatch has. However, the bridge from the Hatch through bluetooth to my Flint2 router and then to my iPhone in order to "get around" Hatch not having native AirPlay features has not ever worked for me-- as in, I have been able to connect the Hatch as a speaker from my iPhone music library, but no music will play. I am considering that this is an artifact of iOS's excellence in music encryption, which I think I turned on at some point. This was all much easier when we just used limewire or frostwire. Anyways, if someone would like to discuss the fix for this, please email me: tmccoy678@gmail.com. 
+
+I hope this repo provides someone a faster UI experience with their Hatch alarm clock. 
+
+Thank you, 
+
+Taylor 
+
 Hatch Alarm Clock Debloat provides Rose Control, a local-first iPhone
 controller for the Hatch Restore 2. The app connects directly over Bluetooth,
 requires no Hatch account, remembers the paired clock, and reconnects
