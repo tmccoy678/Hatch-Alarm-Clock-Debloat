@@ -12,3 +12,7 @@ their own licenses.
 
 Hatch firmware is proprietary and is not distributed by this repository. A
 device owner must lawfully obtain any input image used for private analysis.
+
+The repository records identified public media URLs for interoperability. It
+does not redistribute the referenced sound or radio content; each provider's
+content and service terms continue to apply.

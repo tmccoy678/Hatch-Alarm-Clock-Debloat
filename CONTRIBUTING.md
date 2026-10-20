@@ -12,6 +12,8 @@ support for a precisely identified Hatch device and firmware combination.
    in the README.
 5. Record physical light, sound, display, alarm, and reboot observations
    separately from transport acknowledgements and simulated tests.
+6. Update `PRIVACY.md` when a change adds stored data, a permission, or a
+   network destination.
 
 Never commit vendor firmware, credentials, maintenance keys, private audio,
 MAC addresses, peripheral identifiers, device dumps, or personal network
