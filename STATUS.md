@@ -11,6 +11,8 @@
 - Optional OpenWrt audio relay source.
 - Guided iPhone installer and renewal path with deployment values kept outside
   the repository.
+- Remembered-device lookup and automatic BLE recovery with a passive app launch
+  that sends no clock command.
 
 ## Verified on hardware
 
@@ -19,6 +21,8 @@
 - Included-sound playback using the catalog ID and exact media URL.
 - Factory IoT-disconnect command acknowledgement.
 - Display-command transport acknowledgement.
+- Reconnection to the remembered Restore after app termination and relaunch,
+  without another physical Bluetooth-button press.
 
 ## Pending physical acceptance
 
