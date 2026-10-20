@@ -1,0 +1,283 @@
+#!/usr/bin/env python3
+"""Build, sign, and install Rose Control on an owner's connected iPhone."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import platform
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import urlparse
+
+
+PROJECT = Path(__file__).resolve().parent
+XCODE_PROJECT = PROJECT / "ios/RoseControl/RoseControl.xcodeproj"
+SWIFT_PACKAGE = PROJECT / "ios/RoseControlCore"
+DERIVED_DATA = PROJECT / ".build/installer"
+APP_PATH = DERIVED_DATA / "Build/Products/Release-iphoneos/Rose Control.app"
+CONFIG_PATH = Path.home() / ".config/hatch-alarm-clock-debloat/config.json"
+
+
+class InstallError(RuntimeError):
+    """A user-actionable installer failure."""
+
+
+def validate_team_id(value: str) -> str:
+    if not re.fullmatch(r"[A-Z0-9]{10}", value):
+        raise argparse.ArgumentTypeError("Apple development team ID must be 10 characters")
+    return value
+
+
+def validate_bundle_id(value: str) -> str:
+    if not re.fullmatch(r"[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+", value):
+        raise argparse.ArgumentTypeError("bundle identifier must use reverse-domain syntax")
+    return value
+
+
+def validate_device_id(value: str) -> str:
+    if not re.fullmatch(r"[A-Fa-f0-9-]{8,64}", value):
+        raise argparse.ArgumentTypeError("device identifier has an unexpected format")
+    return value
+
+
+def validate_relay_url(value: str) -> str:
+    parsed = urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise argparse.ArgumentTypeError("relay URL must be an http or https URL")
+    return value
+
+
+def load_config() -> dict[str, str]:
+    try:
+        payload = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    return {str(key): str(value) for key, value in payload.items() if value is not None}
+
+
+class Installer:
+    def __init__(self, arguments: argparse.Namespace) -> None:
+        self.arguments = arguments
+        self.saved = load_config()
+        self.team_id = arguments.team_id or self.saved.get("team_id")
+        self.bundle_id = arguments.bundle_id or self.saved.get("bundle_id")
+        self.device_id = arguments.device_id or self.saved.get("device_id")
+        self.relay_url = arguments.relay_url or self.saved.get(
+            "relay_url", "https://rose-relay.local/rose-stream.mp3"
+        )
+
+    def say(self, message: str) -> None:
+        print(f"  {message}")
+
+    def stage(self, number: int, total: int, title: str) -> None:
+        print(f"\n[{number}/{total}] {title}")
+
+    def run(
+        self,
+        command: list[str],
+        *,
+        cwd: Path = PROJECT,
+        capture: bool = False,
+        timeout: int = 900,
+    ) -> subprocess.CompletedProcess[str]:
+        try:
+            return subprocess.run(
+                command,
+                cwd=cwd,
+                text=True,
+                capture_output=capture,
+                timeout=timeout,
+                check=True,
+            )
+        except subprocess.CalledProcessError as error:
+            detail = (error.stderr or error.stdout or "").strip()
+            raise InstallError(
+                f"command failed ({Path(command[0]).name}): {detail or error.returncode}"
+            ) from error
+        except subprocess.TimeoutExpired as error:
+            raise InstallError(f"command timed out: {Path(command[0]).name}") from error
+
+    def check_local(self) -> None:
+        if platform.system() != "Darwin":
+            raise InstallError("installing the iPhone app requires macOS")
+        if sys.version_info < (3, 9):
+            raise InstallError("Python 3.9 or newer is required")
+        for command in ("xcodebuild", "xcrun", "swift"):
+            if not shutil_which(command):
+                raise InstallError(f"missing required Apple developer command: {command}")
+        for path in (XCODE_PROJECT, SWIFT_PACKAGE / "Package.swift"):
+            if not path.exists():
+                raise InstallError(f"repository is incomplete: {path.relative_to(PROJECT)}")
+
+    def list_devices(self) -> str:
+        return self.run(
+            ["xcrun", "devicectl", "list", "devices"], capture=True, timeout=120
+        ).stdout
+
+    def show_plan(self) -> None:
+        print("Hatch Alarm Clock Debloat installer plan")
+        for index, text in enumerate(
+            (
+                "check Xcode, Swift, signing, and the connected iPhone",
+                "run the local protocol and firmware-integrity tests",
+                "build Rose Control with the owner's Apple team and bundle ID",
+                "install a fresh signed copy on the selected iPhone",
+                "leave the clock's current light, sound, time, and alarms untouched",
+                "save private reinstall settings outside the repository",
+            ),
+            start=1,
+        ):
+            print(f"  {index}. {text}")
+        print("  Firmware writing and router changes are outside this installer.")
+
+    def obtain_values(self) -> None:
+        if self.arguments.yes and not all((self.team_id, self.bundle_id, self.device_id)):
+            raise InstallError("--yes requires --team-id, --bundle-id, and --device-id")
+        if not self.team_id:
+            self.say("Find the Team ID in Xcode → Settings → Accounts → your Apple ID.")
+            self.team_id = validate_team_id(input("  Apple development team ID: ").strip())
+        if not self.bundle_id:
+            default = f"com.local.{self.team_id.lower()}.rose-control"
+            entered = input(f"  Unique bundle identifier [{default}]: ").strip()
+            self.bundle_id = validate_bundle_id(entered or default)
+        if not self.device_id:
+            self.say("Connect, unlock, and trust the iPhone. Available devices:")
+            print(self.list_devices())
+            self.device_id = validate_device_id(input("  iPhone device identifier: ").strip())
+        assert self.team_id and self.bundle_id and self.device_id
+        self.team_id = validate_team_id(self.team_id)
+        self.bundle_id = validate_bundle_id(self.bundle_id)
+        self.device_id = validate_device_id(self.device_id)
+        self.relay_url = validate_relay_url(self.relay_url)
+
+    def run_tests(self) -> None:
+        self.run(["swift", "test"], cwd=SWIFT_PACKAGE)
+        self.run(
+            [sys.executable, "-m", "unittest", "firmware.tests.test_esp32_image", "-v"]
+        )
+        self.run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
+
+    def build(self) -> None:
+        assert self.team_id and self.bundle_id and self.device_id
+        self.run(
+            [
+                "xcodebuild",
+                "-project",
+                str(XCODE_PROJECT),
+                "-scheme",
+                "RoseControl",
+                "-configuration",
+                "Release",
+                "-destination",
+                f"platform=iOS,id={self.device_id}",
+                "-derivedDataPath",
+                str(DERIVED_DATA),
+                "-allowProvisioningUpdates",
+                "CODE_SIGN_STYLE=Automatic",
+                f"DEVELOPMENT_TEAM={self.team_id}",
+                f"PRODUCT_BUNDLE_IDENTIFIER={self.bundle_id}",
+                f"ROSE_MUSIC_RELAY_URL={self.relay_url}",
+                "build",
+            ],
+            timeout=1200,
+        )
+        if not APP_PATH.is_dir():
+            raise InstallError(f"Xcode did not produce the expected app: {APP_PATH}")
+
+    def install_app(self) -> None:
+        assert self.device_id
+        self.run(
+            [
+                "xcrun",
+                "devicectl",
+                "device",
+                "install",
+                "app",
+                "--device",
+                self.device_id,
+                str(APP_PATH),
+            ],
+            timeout=300,
+        )
+
+    def write_config(self) -> None:
+        assert self.team_id and self.bundle_id and self.device_id
+        CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "team_id": self.team_id,
+            "bundle_id": self.bundle_id,
+            "device_id": self.device_id,
+            "relay_url": self.relay_url,
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+        }
+        temporary = CONFIG_PATH.with_suffix(".tmp")
+        temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        temporary.chmod(0o600)
+        temporary.replace(CONFIG_PATH)
+
+    def install(self) -> None:
+        self.check_local()
+        if self.arguments.check:
+            self.say("macOS, Xcode command-line tools, Swift, and project sources are ready.")
+            self.say("Connected-device inventory:")
+            print(self.list_devices())
+            return
+        self.show_plan()
+        if self.arguments.dry_run:
+            self.say("Dry run complete; no app, phone, clock, or network state changed.")
+            return
+        self.obtain_values()
+        total = 5
+        self.stage(1, total, "Verify the source")
+        self.run_tests()
+        self.stage(2, total, "Build and sign Rose Control")
+        self.build()
+        self.stage(3, total, "Install the fresh app on the iPhone")
+        self.install_app()
+        self.stage(4, total, "Save private reinstall settings")
+        self.write_config()
+        self.stage(5, total, "Open Rose Control when ready")
+        self.say("The fresh app is installed. Open it from the iPhone Home Screen.")
+        self.say("The installer sent no command to the clock, so its current routine is unchanged.")
+        self.say("A free Apple development signature may need this installer again after it expires.")
+
+
+def shutil_which(command: str) -> str | None:
+    for directory in os.environ.get("PATH", "").split(os.pathsep):
+        candidate = Path(directory) / command
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
+def parser() -> argparse.ArgumentParser:
+    result = argparse.ArgumentParser(description=__doc__)
+    result.add_argument("--check", action="store_true", help="check local and iPhone readiness")
+    result.add_argument("--dry-run", action="store_true", help="show the installation plan only")
+    result.add_argument("--team-id", type=validate_team_id, help="Apple development team ID")
+    result.add_argument("--bundle-id", type=validate_bundle_id, help="unique app bundle identifier")
+    result.add_argument("--device-id", type=validate_device_id, help="connected iPhone identifier")
+    result.add_argument("--relay-url", type=validate_relay_url, help="optional LAN audio relay URL")
+    result.add_argument("--yes", action="store_true", help="run non-interactively")
+    return result
+
+
+def main() -> int:
+    arguments = parser().parse_args()
+    try:
+        Installer(arguments).install()
+    except (InstallError, OSError, ValueError) as error:
+        print(f"\nInstallation stopped: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
