@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+**/.build/
+**/build/
+**/xcuserdata/
+*.xcuserstate
+.scratch/
+*.bin
+*.zip
+SHA256SUMS

@@ -1,0 +1,229 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00100000000000000000001 /* RoseControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000001 /* RoseControlApp.swift */; };
+		A00100000000000000000002 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000002 /* RootView.swift */; };
+		A00100000000000000000004 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000004 /* DashboardView.swift */; };
+		A00100000000000000000005 /* SoundLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000005 /* SoundLibraryView.swift */; };
+		A00100000000000000000006 /* AlarmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000006 /* AlarmView.swift */; };
+		A00100000000000000000008 /* IncludedSoundCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100000000000000000008 /* IncludedSoundCatalog.swift */; };
+		A0010000000000000000000A /* RoseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000A /* RoseModel.swift */; };
+		A0010000000000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000B /* Assets.xcassets */; };
+		A0010000000000000000000C /* RoseControlCore in Frameworks */ = {isa = PBXBuildFile; productRef = S00100000000000000000001 /* RoseControlCore */; };
+		A0010000000000000000000F /* MusicLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000D /* MusicLibraryView.swift */; };
+		A00100000000000000000010 /* RoseLocalBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010000000000000000000E /* RoseLocalBLE.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F00100000000000000000001 /* RoseControlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseControlApp.swift; sourceTree = "<group>"; };
+		F00100000000000000000002 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		F00100000000000000000004 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		F00100000000000000000005 /* SoundLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundLibraryView.swift; sourceTree = "<group>"; };
+		F00100000000000000000006 /* AlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmView.swift; sourceTree = "<group>"; };
+		F00100000000000000000008 /* IncludedSoundCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncludedSoundCatalog.swift; sourceTree = "<group>"; };
+		F0010000000000000000000A /* RoseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseModel.swift; sourceTree = "<group>"; };
+		F0010000000000000000000B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F0010000000000000000000C /* Rose Control.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rose Control.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0010000000000000000000D /* MusicLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicLibraryView.swift; sourceTree = "<group>"; };
+		F0010000000000000000000E /* RoseLocalBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseLocalBLE.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B00100000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0010000000000000000000C /* RoseControlCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G00100000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				G00100000000000000000002 /* RoseControl */,
+				G00100000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		G00100000000000000000002 /* RoseControl */ = {
+			isa = PBXGroup;
+			children = (
+				F00100000000000000000001 /* RoseControlApp.swift */,
+				F00100000000000000000002 /* RootView.swift */,
+				F00100000000000000000004 /* DashboardView.swift */,
+				F00100000000000000000005 /* SoundLibraryView.swift */,
+				F00100000000000000000006 /* AlarmView.swift */,
+				F00100000000000000000008 /* IncludedSoundCatalog.swift */,
+				F0010000000000000000000A /* RoseModel.swift */,
+				F0010000000000000000000D /* MusicLibraryView.swift */,
+				F0010000000000000000000E /* RoseLocalBLE.swift */,
+				F0010000000000000000000B /* Assets.xcassets */,
+			);
+			path = RoseControl;
+			sourceTree = "<group>";
+		};
+		G00100000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (F0010000000000000000000C /* Rose Control.app */,);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T00100000000000000000001 /* RoseControl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C00100000000000000000002 /* Build configuration list for PBXNativeTarget "RoseControl" */;
+			buildPhases = (
+				B00100000000000000000002 /* Sources */,
+				B00100000000000000000001 /* Frameworks */,
+				B00100000000000000000003 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = RoseControl;
+			packageProductDependencies = (
+				S00100000000000000000001 /* RoseControlCore */,
+			);
+			productName = "Rose Control";
+			productReference = F0010000000000000000000C /* Rose Control.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P00100000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = { T00100000000000000000001 = { CreatedOnToolsVersion = 27.0; }; };
+			};
+			buildConfigurationList = C00100000000000000000001 /* Build configuration list for PBXProject "RoseControl" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base,);
+			mainGroup = G00100000000000000000001;
+			packageReferences = (
+				L00100000000000000000001 /* XCLocalSwiftPackageReference "../RoseControlCore" */,
+			);
+			productRefGroup = G00100000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (T00100000000000000000001 /* RoseControl */,);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B00100000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (A0010000000000000000000B /* Assets.xcassets in Resources */,);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B00100000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00100000000000000000001 /* RoseControlApp.swift in Sources */,
+				A00100000000000000000002 /* RootView.swift in Sources */,
+				A00100000000000000000004 /* DashboardView.swift in Sources */,
+				A00100000000000000000005 /* SoundLibraryView.swift in Sources */,
+				A00100000000000000000006 /* AlarmView.swift in Sources */,
+				A00100000000000000000008 /* IncludedSoundCatalog.swift in Sources */,
+				A0010000000000000000000A /* RoseModel.swift in Sources */,
+				A0010000000000000000000F /* MusicLibraryView.swift in Sources */,
+				A00100000000000000000010 /* RoseLocalBLE.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D00100000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_OPTIMIZATION_LEVEL = 0; ONLY_ACTIVE_ARCH = YES; SDKROOT = iphoneos; SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
+		D00100000000000000000002 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; GCC_C_LANGUAGE_STANDARD = gnu17; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; }; name = Release; };
+		D00100000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rose Control";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Choose music from your library to play through Rose.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Control your nearby Hatch Restore directly without a Hatch login.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find the Rose AirPlay relay on your home network.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				INFOPLIST_KEY_RoseMusicRelayURL = "$(ROSE_MUSIC_RELAY_URL)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.rose-control-ios";
+				PRODUCT_NAME = "Rose Control";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		D00100000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rose Control";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Choose music from your library to play through Rose.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Control your nearby Hatch Restore directly without a Hatch login.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find the Rose AirPlay relay on your home network.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				INFOPLIST_KEY_RoseMusicRelayURL = "$(ROSE_MUSIC_RELAY_URL)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.rose-control-ios";
+				PRODUCT_NAME = "Rose Control";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C00100000000000000000001 /* Build configuration list for PBXProject "RoseControl" */ = {isa = XCConfigurationList; buildConfigurations = (D00100000000000000000001 /* Debug */, D00100000000000000000002 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C00100000000000000000002 /* Build configuration list for PBXNativeTarget "RoseControl" */ = {isa = XCConfigurationList; buildConfigurations = (D00100000000000000000003 /* Debug */, D00100000000000000000004 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		L00100000000000000000001 /* XCLocalSwiftPackageReference "../RoseControlCore" */ = {isa = XCLocalSwiftPackageReference; relativePath = ../RoseControlCore; };
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		S00100000000000000000001 /* RoseControlCore */ = {isa = XCSwiftPackageProductDependency; package = L00100000000000000000001 /* XCLocalSwiftPackageReference "../RoseControlCore" */; productName = RoseControlCore; };
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = P00100000000000000000001 /* Project object */;
+}

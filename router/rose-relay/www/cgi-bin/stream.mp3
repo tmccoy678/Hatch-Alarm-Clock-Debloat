@@ -1,0 +1,20 @@
+#!/bin/sh
+
+printf 'Content-Type: audio/mpeg\r\n'
+printf 'Cache-Control: no-store\r\n'
+printf 'Connection: close\r\n\r\n'
+
+exec /usr/bin/lame \
+    --silent \
+    --noreplaygain \
+    --flush \
+    -r \
+    -s 44.1 \
+    --bitwidth 16 \
+    --signed \
+    --little-endian \
+    -m s \
+    -b 128 \
+    -t \
+    /tmp/rose-airplay.pcm \
+    -
