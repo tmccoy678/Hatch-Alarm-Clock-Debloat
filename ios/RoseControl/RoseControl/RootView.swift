@@ -21,7 +21,7 @@ struct RootView: View {
                     Text("Rose is offline")
                         .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .foregroundStyle(RoseTheme.text)
-                    Text("Move near Rose and make sure Bluetooth is on.")
+                    Text("Rose will reconnect automatically when it is nearby and Bluetooth is on. Use the clock's Bluetooth button only for first pairing or after a reset.")
                         .multilineTextAlignment(.center)
                         .foregroundStyle(RoseTheme.secondaryText)
                     Button("Retry") {

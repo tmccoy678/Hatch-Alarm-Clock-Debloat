@@ -2,6 +2,11 @@
 
 Hatch Alarm Clock Debloat is a local-first controller and firmware research project for a Hatch Restore 2. It preserves the light, display, speaker, physical controls, independent alarms, included sounds, selected internet radio, and optional LAN audio while removing routine dependence on a Hatch login and cloud-control path.
 
+Rose Control has no Hatch account or login screen. After the first Bluetooth
+pairing, it remembers that Restore on the iPhone and reconnects automatically
+when the app opens or Bluetooth returns. Reopening the app is passive: it does
+not change the clock's light, sound, time, alarm, or cloud state.
+
 ## Install or renew the iPhone app
 
 The guided installer tests, builds, signs, and installs one fresh copy of Rose
@@ -29,6 +34,8 @@ The project contains:
 ## Verified behavior
 
 - Direct BLE light, color, brightness, volume, stop, included-sound, and alarm commands receive device acknowledgements.
+- The iPhone app remembers its paired Restore and tries the saved peripheral,
+  an existing iOS connection, and nearby discovery in that order.
 - The app bundles the verified free-sound catalog and constructs a native alarm document locally.
 - The factory `WSL` command provides a temporary IoT disconnect while factory firmware remains installed.
 - Native display-text and display-animation commands transport successfully over BLE.

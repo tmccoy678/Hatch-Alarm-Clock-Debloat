@@ -12,6 +12,12 @@ available.
   paired-device connection; and
 - Developer Mode enabled on the iPhone when required by iOS.
 
+Developer Mode is a one-time iOS requirement for a locally signed app. The
+first Restore connection may also require holding the clock's Bluetooth button
+to establish the phone's bond. Rose Control then remembers that Restore locally
+and reconnects without a Hatch login or another button press while the bond
+remains present.
+
 ## Run
 
 ```sh
@@ -32,9 +38,13 @@ iPhone identifier, and optionally a LAN relay URL. It then:
    permissions.
 
 Use the same bundle identifier on later runs to replace and renew the existing
-copy. A free Apple development signature can expire; running `./install` again
-builds and installs a newly signed copy.
+copy while preserving the remembered Restore. A free Apple development
+signature can expire; running `./install` again builds and installs a newly
+signed copy.
 
 The installer performs no BLE connection, clock command, cloud request, router
 change, firmware build, or firmware write. The clock continues its current
 routine while the phone app is renewed.
+
+Opening Rose Control establishes the BLE control connection but sends no light,
+sound, clock, alarm, network, or cloud command until the owner chooses a control.

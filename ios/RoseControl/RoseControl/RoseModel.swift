@@ -57,6 +57,17 @@ final class RoseModel: ObservableObject {
     init() {
         UserDefaults.standard.removeObject(forKey: "favoriteSoundIDs")
         UserDefaults.standard.removeObject(forKey: "customAudioURL")
+        local.readinessDidChange = { [weak self] ready in
+            guard let self else { return }
+            self.localControlAvailable = ready
+            self.rose.online = ready
+            if ready {
+                self.errorMessage = nil
+                self.phase = .ready
+            } else if self.phase == .ready {
+                self.phase = .connecting
+            }
+        }
         loadLocalPreferences()
     }
 
@@ -65,7 +76,6 @@ final class RoseModel: ObservableObject {
         errorMessage = nil
         do {
             try await local.connect()
-            try? await local.send(RoseUARTCommand.disconnectCloud())
             localControlAvailable = true
             rose.online = true
             phase = .ready
@@ -83,7 +93,6 @@ final class RoseModel: ObservableObject {
         errorMessage = nil
         do {
             try await local.connect()
-            try? await local.send(RoseUARTCommand.disconnectCloud())
             localControlAvailable = true
             rose.online = true
             phase = .ready

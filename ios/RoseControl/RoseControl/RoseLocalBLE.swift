@@ -4,6 +4,7 @@ import RoseControlCore
 
 @MainActor
 final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @preconcurrency CBPeripheralDelegate {
+    private let rememberedPeripheralKey = "roseRememberedPeripheralIdentifier"
     private let expectedNames = ["Hatch Restore"]
     private let serviceUUID = CBUUID(string: RoseBLEUUIDs.communicationService)
     private let uartWriteUUID = CBUUID(string: RoseBLEUUIDs.uartWrite)
@@ -24,6 +25,11 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
     private var commandContinuation: CheckedContinuation<Void, Error>?
     private var connectTimeout: Task<Void, Never>?
     private var commandTimeout: Task<Void, Never>?
+    private var reconnectTask: Task<Void, Never>?
+    private var wantsPersistentConnection = false
+    private var reportedReady = false
+
+    var readinessDidChange: ((Bool) -> Void)?
 
     var isReady: Bool {
         peripheral?.state == .connected
@@ -34,6 +40,7 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
     }
 
     func connect() async throws {
+        wantsPersistentConnection = true
         if isReady { return }
         guard connectContinuation == nil else { throw RoseLocalBLEError.busy }
 
@@ -46,7 +53,7 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
             }
 
             if let central {
-                if central.state == .poweredOn { startScan(using: central) }
+                if central.state == .poweredOn { beginConnection(using: central) }
             } else {
                 central = CBCentralManager(delegate: self, queue: .main)
             }
@@ -114,10 +121,12 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            startScan(using: central)
+            beginConnection(using: central)
         case .unknown, .resetting:
             break
         case .poweredOff, .unauthorized, .unsupported:
+            reconnectTask?.cancel()
+            reconnectTask = nil
             failConnection(RoseLocalBLEError.bluetoothUnavailable)
         @unknown default:
             failConnection(RoseLocalBLEError.bluetoothUnavailable)
@@ -139,13 +148,13 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
                 || name.hasPrefix("RestoreV4")
                 || services.contains(serviceUUID) else { return }
 
-        self.peripheral = peripheral
-        peripheral.delegate = self
-        central.stopScan()
-        central.connect(peripheral)
+        connect(to: peripheral, using: central)
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        reconnectTask?.cancel()
+        reconnectTask = nil
+        peripheral.delegate = self
         peripheral.discoverServices([serviceUUID])
     }
 
@@ -154,7 +163,7 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
         didFailToConnect peripheral: CBPeripheral,
         error: Error?
     ) {
-        self.peripheral = nil
+        clearConnectionState()
         failConnection(error ?? RoseLocalBLEError.disconnected)
     }
 
@@ -163,10 +172,7 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
         didDisconnectPeripheral peripheral: CBPeripheral,
         error: Error?
     ) {
-        self.peripheral = nil
-        uartWriteCharacteristic = nil
-        jsonWriteCharacteristic = nil
-        notifyingCharacteristics.removeAll()
+        clearConnectionState()
         let failure = error ?? RoseLocalBLEError.disconnected
         failConnection(failure)
         finishCommand(.failure(failure))
@@ -222,7 +228,11 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
         guard characteristic.isNotifying else { return }
         notifyingCharacteristics.insert(characteristic.uuid)
         guard isReady else { return }
-        print("[RoseControl] local BLE ready")
+        remember(peripheral)
+        reconnectTask?.cancel()
+        reconnectTask = nil
+        reportReadiness(true)
+        print("[RoseControl] local BLE ready; device remembered for automatic reconnect")
         finishConnection(.success(()))
     }
 
@@ -271,11 +281,69 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
         }
     }
 
+    private func beginConnection(using central: CBCentralManager) {
+        guard wantsPersistentConnection,
+              central.state == .poweredOn,
+              peripheral == nil else { return }
+
+        if let identifier = rememberedPeripheralIdentifier,
+           let remembered = central.retrievePeripherals(withIdentifiers: [identifier]).first {
+            print("[RoseControl] reconnecting to remembered device")
+            connect(to: remembered, using: central)
+            return
+        }
+
+        let connected = central.retrieveConnectedPeripherals(withServices: [serviceUUID])
+        if let candidate = connected.first {
+            print("[RoseControl] recovering an existing system Bluetooth connection")
+            connect(to: candidate, using: central)
+            return
+        }
+
+        startScan(using: central)
+    }
+
+    private func connect(to peripheral: CBPeripheral, using central: CBCentralManager) {
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        central.stopScan()
+        switch peripheral.state {
+        case .connected:
+            peripheral.discoverServices([serviceUUID])
+        case .connecting:
+            break
+        case .disconnected:
+            central.connect(peripheral)
+        case .disconnecting:
+            self.peripheral = nil
+            scheduleReconnect()
+        @unknown default:
+            self.peripheral = nil
+            scheduleReconnect()
+        }
+    }
+
     private func startScan(using central: CBCentralManager) {
-        guard connectContinuation != nil else { return }
+        guard wantsPersistentConnection,
+              peripheral == nil,
+              !central.isScanning else { return }
         central.scanForPeripherals(
             withServices: nil,
             options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
+        )
+    }
+
+    private var rememberedPeripheralIdentifier: UUID? {
+        guard let value = UserDefaults.standard.string(forKey: rememberedPeripheralKey) else {
+            return nil
+        }
+        return UUID(uuidString: value)
+    }
+
+    private func remember(_ peripheral: CBPeripheral) {
+        UserDefaults.standard.set(
+            peripheral.identifier.uuidString,
+            forKey: rememberedPeripheralKey
         )
     }
 
@@ -287,14 +355,40 @@ final class RoseLocalBLE: NSObject, @preconcurrency CBCentralManagerDelegate, @p
     }
 
     private func failConnection(_ error: Error) {
-        if let peripheral, !isReady {
+        if let peripheral {
             central?.cancelPeripheralConnection(peripheral)
-            self.peripheral = nil
-            uartWriteCharacteristic = nil
-            jsonWriteCharacteristic = nil
-            notifyingCharacteristics.removeAll()
         }
+        clearConnectionState()
         finishConnection(.failure(error))
+        scheduleReconnect()
+    }
+
+    private func clearConnectionState() {
+        peripheral = nil
+        uartWriteCharacteristic = nil
+        jsonWriteCharacteristic = nil
+        notifyingCharacteristics.removeAll()
+        reportReadiness(false)
+    }
+
+    private func reportReadiness(_ ready: Bool) {
+        guard reportedReady != ready else { return }
+        reportedReady = ready
+        readinessDidChange?(ready)
+    }
+
+    private func scheduleReconnect() {
+        guard wantsPersistentConnection,
+              central?.state == .poweredOn else { return }
+        reconnectTask?.cancel()
+        reconnectTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1.5))
+            guard let self,
+                  !Task.isCancelled,
+                  let central = self.central,
+                  central.state == .poweredOn else { return }
+            self.beginConnection(using: central)
+        }
     }
 
     private func finishConnection(_ result: Result<Void, Error>) {
