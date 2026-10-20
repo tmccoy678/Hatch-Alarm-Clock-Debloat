@@ -9,6 +9,8 @@
 - Tested Colossus light scene with cancellation and warm-light restoration.
 - Exact-source firmware patch builder with source-byte guards, ESP32 checksum repair, and appended-hash repair.
 - Optional OpenWrt audio relay source.
+- Guided iPhone installer and renewal path with deployment values kept outside
+  the repository.
 
 ## Verified on hardware
 

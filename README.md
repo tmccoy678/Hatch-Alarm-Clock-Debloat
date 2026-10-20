@@ -2,6 +2,22 @@
 
 Hatch Alarm Clock Debloat is a local-first controller and firmware research project for a Hatch Restore 2. It preserves the light, display, speaker, physical controls, independent alarms, included sounds, selected internet radio, and optional LAN audio while removing routine dependence on a Hatch login and cloud-control path.
 
+## Install or renew the iPhone app
+
+The guided installer tests, builds, signs, and installs one fresh copy of Rose
+Control on a connected iPhone:
+
+```sh
+./install --check
+./install
+```
+
+Re-running the same command renews an expired development-signed copy. It does
+not launch the app, contact the clock, change the clock's network, flash
+firmware, or alter the light, sound, time, or alarms already running on it. See
+[Installation](docs/INSTALLATION.md), [Compatibility](docs/COMPATIBILITY.md),
+and [Recovery](docs/RECOVERY.md).
+
 The project contains:
 
 - an iPhone controller that speaks directly to the Restore 2 over BLE;
@@ -45,8 +61,10 @@ xcodebuild -project ios/RoseControl/RoseControl.xcodeproj \
   CODE_SIGNING_ALLOWED=NO build
 ```
 
-The optional relay configuration lives under `router/rose-relay`. Its LAN endpoint is deployment-specific and should be changed in the app before use on another network.
+The optional relay configuration lives under `router/rose-relay`. Its LAN
+endpoint is supplied to the installer and saved only in the owner's private
+local configuration.
 
-Created by Taylor McCoy with Aster and other OpenAI Codex agents.
-
-This private repository has no public license yet. Licensing and a final hardware/privacy review should precede public release.
+Created by Taylor McCoy with Aster and other OpenAI Codex agents. Original
+project code is available under the [MIT License](LICENSE); third-party software,
+firmware, trademarks, and platform components retain their own terms.
