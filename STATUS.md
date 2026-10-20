@@ -1,5 +1,9 @@
 # Engineering status
 
+The supported owner path is the locally built Rose Control iPhone app. The
+firmware builder and OpenWrt relay remain separate research and optional
+components; the installer does not invoke either one.
+
 ## Complete in source
 
 - Direct local BLE controller with no Hatch login UI or cloud fallback.
@@ -23,6 +27,8 @@
 - Display-command transport acknowledgement.
 - Reconnection to the remembered Restore after app termination and relaunch,
   without another physical Bluetooth-button press.
+- Passive app launch with no automatic light, sound, time, alarm, network, or
+  cloud command.
 
 ## Pending physical acceptance
 

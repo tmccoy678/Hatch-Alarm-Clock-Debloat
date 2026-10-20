@@ -128,7 +128,7 @@ class Installer:
                 "check Xcode, Swift, signing, and the connected iPhone",
                 "run the local protocol and firmware-integrity tests",
                 "build Rose Control with the owner's Apple team and bundle ID",
-                "install a fresh signed copy on the selected iPhone",
+                "install or renew the signed copy on the selected iPhone",
                 "leave the clock's current light, sound, time, and alarms untouched",
                 "save private reinstall settings outside the repository",
             ),
@@ -239,13 +239,14 @@ class Installer:
         self.run_tests()
         self.stage(2, total, "Build and sign Rose Control")
         self.build()
-        self.stage(3, total, "Install the fresh app on the iPhone")
+        self.stage(3, total, "Install or renew Rose Control on the iPhone")
         self.install_app()
         self.stage(4, total, "Save private reinstall settings")
         self.write_config()
         self.stage(5, total, "Open Rose Control when ready")
-        self.say("The fresh app is installed. Open it from the iPhone Home Screen.")
+        self.say("Rose Control is installed. Open it from the iPhone Home Screen.")
         self.say("The installer sent no command to the clock, so its current routine is unchanged.")
+        self.say("After first pairing, later launches reconnect without a Hatch login or clock button.")
         self.say("A free Apple development signature may need this installer again after it expires.")
 
 

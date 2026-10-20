@@ -18,16 +18,21 @@ to establish the phone's bond. Rose Control then remembers that Restore locally
 and reconnects without a Hatch login or another button press while the bond
 remains present.
 
+See [Pairing and everyday use](PAIRING.md) for the exact first-run sequence and
+the conditions that can require a new pairing window.
+
 ## Run
 
 ```sh
+./install --dry-run
 ./install --check
 ./install
 ```
 
-The check lists the devices visible to Xcode. The guided run asks for the Apple
-development Team ID, a unique reverse-domain bundle identifier, the selected
-iPhone identifier, and optionally a LAN relay URL. It then:
+The dry run describes the procedure without changing anything. The check lists
+the devices visible to Xcode. The guided run asks for the Apple development
+Team ID, a unique reverse-domain bundle identifier, the selected iPhone
+identifier, and optionally a LAN relay URL. It then:
 
 1. runs the Swift protocol tests, firmware-image integrity tests, and installer
    tests;
@@ -48,3 +53,7 @@ routine while the phone app is renewed.
 
 Opening Rose Control establishes the BLE control connection but sends no light,
 sound, clock, alarm, network, or cloud command until the owner chooses a control.
+
+The installer stores its renewal values on the Mac and Rose Control stores its
+remembered device and local preferences on the iPhone. Their exact contents and
+network paths are documented in [Privacy](../PRIVACY.md).

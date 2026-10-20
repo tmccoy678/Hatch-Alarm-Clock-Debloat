@@ -17,6 +17,9 @@ Useful reports identify the affected commit, Restore generation and firmware,
 reproduction steps, impact, and the least-privileged evidence needed to confirm
 the behavior. Remove personal and network identifiers from logs.
 
+[PRIVACY.md](PRIVACY.md) lists the data stored by the app and installer and the
+network paths activated by owner-selected features.
+
 ## Installer trust boundary
 
 The supported installer builds and installs the local iPhone controller. Any

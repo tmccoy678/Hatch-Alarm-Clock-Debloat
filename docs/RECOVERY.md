@@ -22,6 +22,10 @@ The clock's Bluetooth button can be required again after a clock reset, a new
 phone, or removal of the iOS Bluetooth bond. Routine app renewal with the same
 bundle identifier preserves the app container and remembered device.
 
+Follow [Pairing and everyday use](PAIRING.md) before opening a new pairing
+window. Ordinary app relaunches and Bluetooth interruptions recover
+automatically.
+
 ## Remove the local controller
 
 Delete Rose Control from the iPhone like any other app. The private reinstall
